@@ -1,3 +1,4 @@
+-i https://pypi.python.org/simple/
 pandas
 gunicorn>=19.7.1
 plotly>=2.0.9
@@ -8,4 +9,4 @@ dash-core-components==0.43.0
 dash-table==3.1.11
 dash-daq==0.1.0
 dash-table-experiments==0.6.0
-
+pubmed-lookup

@@ -1,4 +1,5 @@
-*.csv
 .idea/
 Pipfile
 *.lock
+*.csv
+*.tsv

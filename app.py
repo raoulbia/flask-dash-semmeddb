@@ -14,12 +14,13 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css',
 
 semmed = pd.read_csv('./assets/SEMMEDDB_TRIPLES_FINAL.csv')
 pkinfam = pd.read_csv('./assets/pkinfam.tsv', sep='\t')
-results = pd.read_csv('./assets/RESULTS-FINAL-SAMPLE.csv', sep='\t',
+results = pd.read_csv('./assets/RESULTS-FINAL.csv', sep='\t',
                       usecols=['ProteinKinase_ID', 'KinaseLabel', 'ProteinSubstrate_ID', 'SubstrateLabel', 'Site', 'Score'])
 email = 'raoul.biagioni@ie.fujitsu.com'
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions']=True
+server = app.server
 
 app.layout = html.Div([
     html.H4('LinkPhinder demo'),
