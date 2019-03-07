@@ -8,6 +8,7 @@ import numpy as np
 from pubmed_lookup import PubMedLookup
 from pubmed_lookup import Publication
 import time
+# print(dcc.__version__)
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css',
                         'https://codepen.io/chriddyp/pen/brPBPO.css']
@@ -20,6 +21,8 @@ email = 'raoul.biagioni@ie.fujitsu.com'
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions']=True
+# app.css.config.serve_locally = True
+# app.scripts.config.serve_locally = True
 server = app.server
 
 app.layout = html.Div([
@@ -120,7 +123,7 @@ def render_content(tab, entity=None):
               [Input('tabs-example', 'value'),
                Input('dropdown-selected', 'value')])
 def render_content_right(tab, entity):
-    print(tab)
+    # print(tab)
 
     if tab == 'tab-1-example':
         _, related = get_rows(entity, 1)
@@ -186,6 +189,7 @@ def show_sites_1(id, rows, selected_row_indices):
         return html.P('Please select a row in main table on the left.')
     else:
         selected_rows = [rows[i] for i in selected_row_indices]
+        # print(selected_rows)
         rows =  get_site_rows(selected_rows)
         return dt.DataTable(rows=rows,
                             columns=['KinaseLabel', 'SubstrateLabel', 'Site', 'Score'],
@@ -200,19 +204,22 @@ def show_sites_1(id, rows, selected_row_indices):
 
 def get_site_rows(selected_rows):
     kinase, substrate = '', ''
-    df_aux = results.copy()
+    df_tmp = pd.DataFrame()
+
     for row in selected_rows:
+        df_aux = results.copy()
         for k, v in row.items():
             if k == 'KinaseLabel':
                 kinase = v
             if k == 'SubstrateLabel':
                 substrate = v
-        print(kinase, substrate)
+        # print(kinase, substrate)
         # if id == 'tbl1':
         df_aux = df_aux.loc[(df_aux['KinaseLabel'] == kinase) & (df_aux['SubstrateLabel'] == substrate)]
         df_aux['Score'] = df_aux['Score'].apply(lambda x: np.round(x, 3))
-        rows = df_aux[['KinaseLabel', 'SubstrateLabel', 'Site', 'Score']].to_dict('records')
-        return rows
+        df_tmp = pd.concat((df_tmp, df_aux), ignore_index=True)
+    rows = df_tmp[['KinaseLabel', 'SubstrateLabel', 'Site', 'Score']].to_dict('records')
+    return rows
 
 
 
@@ -267,10 +274,10 @@ def get_article_data(articles):
     grid_layout = []
     if len(articles) > 0:
         for article in articles:
-            print(article)
+            # print(article)
             pubmedid = article
             url = 'http://www.ncbi.nlm.nih.gov/pubmed/'+str(pubmedid)
-            print('url', url)
+            # print('url', url)
             lookup = PubMedLookup(url, email)
             try:
                 publication = Publication(lookup)
