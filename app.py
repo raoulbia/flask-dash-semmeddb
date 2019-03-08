@@ -8,6 +8,7 @@ import numpy as np
 from pubmed_lookup import PubMedLookup
 from pubmed_lookup import Publication
 import time
+import urllib.request, json
 # print(dcc.__version__)
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css',
@@ -270,20 +271,29 @@ def get_semmed(entity, related, tab):
     articles = df_subj.PMID.tolist()
     return rows, articles
 
+
 def get_article_data(articles):
     grid_layout = []
     if len(articles) > 0:
         for article in articles:
             # print(article)
             pubmedid = article
-            url = 'http://www.ncbi.nlm.nih.gov/pubmed/'+str(pubmedid)
-            # print('url', url)
-            lookup = PubMedLookup(url, email)
+            # url = 'http://www.ncbi.nlm.nih.gov/pubmed/'+str(pubmedid)
+            url = ('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id='
+                   + str(pubmedid)
+                   + '&retmode=json&api_key=66239ffb18902b7fc031cc2e8972158a5508')
+            # print(url)
+
+            with urllib.request.urlopen(url) as url:
+                data = json.loads(url.read().decode())
+            # print(data['result'][pubmedid]['title'])
+
             try:
-                publication = Publication(lookup)
+                title = data['result'][pubmedid]['title']
             except:
                 continue
-            grid_layout.append(grid_row(pubmedid, publication.title, url))
+            link = 'http://www.ncbi.nlm.nih.gov/pubmed/'+str(pubmedid)
+            grid_layout.append(grid_row(pubmedid, title, link))
     return grid_layout
 
 def grid_row(pubmedid, title, url):
